@@ -113,7 +113,6 @@ Estas prácticas están diseñadas para que los alumnos aprendan los conceptos f
 4. Aplicar el Service y probar:
    ```bash
    kubectl apply -f nginx-service.yaml
-   curl http://localhost:30080
    ```
 
 ### Desafío opcional
