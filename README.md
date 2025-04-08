@@ -177,6 +177,156 @@ Estas prácticas están diseñadas para que los alumnos aprendan los conceptos f
 
 ---
 
+## Práctica 4: Volúmenes Persistentes
+
+### Objetivo
+- Usar un volumen persistente local para guardar datos.
+- Comprobar que los datos persisten aunque el pod se reinicie.
+
+### Instrucciones
+1. Crear un `PersistentVolume` y `PersistentVolumeClaim`:
+   ```yaml
+   apiVersion: v1
+   kind: PersistentVolume
+   metadata:
+     name: local-pv
+   spec:
+     capacity:
+       storage: 1Gi
+     accessModes:
+       - ReadWriteOnce
+     hostPath:
+       path: "/tmp/kind-pv"
+   ---
+   apiVersion: v1
+   kind: PersistentVolumeClaim
+   metadata:
+     name: local-pvc
+   spec:
+     accessModes:
+       - ReadWriteOnce
+     resources:
+       requests:
+         storage: 1Gi
+   ```
+
+2. Crear un pod que use este volumen:
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: pod-con-pv
+   spec:
+     containers:
+     - name: busybox
+       image: busybox
+       command: [ "sh", "-c", "echo 'Hola desde PV' > /data/hola.txt && sleep 3600" ]
+       volumeMounts:
+       - mountPath: "/data"
+         name: volumen-pv
+     volumes:
+     - name: volumen-pv
+       persistentVolumeClaim:
+         claimName: local-pvc
+   ```
+
+3. Aplicar todo y verificar:
+   ```bash
+   kubectl apply -f volumenes.yaml
+   kubectl exec -it pod-con-pv -- cat /data/hola.txt
+   ```
+
+4. Eliminar el pod y volverlo a crear para comprobar persistencia.
+
+### Desafío opcional
+- Montar el volumen en otro pod para compartir los datos.
+
+---
+
+## Práctica 5: Variables de entorno y secretos
+
+### Objetivo
+- Crear un Secret y usarlo como variable de entorno en un pod.
+
+### Instrucciones
+1. Crear un Secret:
+   ```bash
+   kubectl create secret generic mi-secreto --from-literal=CLAVE_API=12345
+   ```
+
+2. Crear el pod:
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: pod-secreto
+   spec:
+     containers:
+     - name: alpine
+       image: alpine
+       command: ["sh", "-c", "env | grep CLAVE_API && sleep 3600"]
+       env:
+       - name: CLAVE_API
+         valueFrom:
+           secretKeyRef:
+             name: mi-secreto
+             key: CLAVE_API
+   ```
+
+3. Aplicar y verificar:
+   ```bash
+   kubectl apply -f pod-secreto.yaml
+   kubectl exec -it pod-secreto -- env | grep CLAVE_API
+   ```
+
+### Desafío opcional
+- Usar un ConfigMap y un Secret juntos para inyectar variables en el pod.
+
+---
+
+## Práctica 6: Health Checks (Probes)
+
+### Objetivo
+- Definir readiness y liveness probes para un contenedor.
+
+### Instrucciones
+1. Crear el archivo `nginx-probe.yaml`:
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: nginx-con-probes
+   spec:
+     containers:
+     - name: nginx
+       image: nginx
+       ports:
+       - containerPort: 80
+       readinessProbe:
+         httpGet:
+           path: /
+           port: 80
+         initialDelaySeconds: 5
+         periodSeconds: 10
+       livenessProbe:
+         httpGet:
+           path: /
+           port: 80
+         initialDelaySeconds: 15
+         periodSeconds: 20
+   ```
+
+2. Aplicar y verificar:
+   ```bash
+   kubectl apply -f nginx-probe.yaml
+   kubectl describe pod nginx-con-probes
+   ```
+
+### Desafío opcional
+- Cambiar la `livenessProbe` para que apunte a una ruta inexistente y observar el reinicio del pod.
+
+---
+
 ## Limpieza
 
 Para eliminar el clúster:
