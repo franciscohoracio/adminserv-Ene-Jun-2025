@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/kind-pv"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-con-pv
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: [ "sh", "-c", "echo 'Hola desde PV' > /data/hola.txt && sleep 3600" ]
+      volumeMounts:
+        - mountPath: "/data"
+          name: volumen-pv
+  volumes:
+    - name: volumen-pv
+      persistentVolumeClaim:
+        claimName: local-pvc
