@@ -113,7 +113,7 @@ Estas prácticas están diseñadas para que los alumnos aprendan los conceptos f
 4. Aplicar el Service y probar:
    ```bash
    kubectl apply -f nginx-service.yaml
-   kubectl port-forward services/nginx-service 8080:80
+   kubectl port-forward service/nginx-service 8080:80
    curl http://localhost:8080
    ```
 
