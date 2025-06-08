@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fecha-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: fecha
+          image: busybox
+          command: ["sh", "-c", "date; echo Fin"]
+      restartPolicy: Never
+  backoffLimit: 2
