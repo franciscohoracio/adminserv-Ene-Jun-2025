@@ -1,9 +1,6 @@
 # Prácticas básicas de Kubernetes con kind
 
-Este repositorio contiene las guías y los manifiestos necesarios para realizar
-seis prácticas introductorias de Kubernetes utilizando [kind](https://kind.sigs.k8s.io/).
-Cada práctica está pensada para ejecutarse en un entorno local con Docker
-instalado.
+Este repositorio contiene las guías y los manifiestos necesarios para realizar seis prácticas introductorias de Kubernetes utilizando [kind](https://kind.sigs.k8s.io/). Cada práctica está pensada para ejecutarse en un entorno local con Docker instalado.
 
 ## Requisitos previos
 
@@ -69,10 +66,9 @@ Desplegar Nginx utilizando un Deployment y exponerlo mediante un Service de tipo
    kubectl apply -f nginx-service.yaml
    ```
 4. Probar accediendo en el navegador o con `curl`:
-   ```bash
-   kubectl port-forward service/nginx-service 8080:80
-   curl http://localhost:8080
-   ```
+    ```bash
+    curl http://localhost:30080
+    ```
 5. **Desafío**: escala el deployment a 5 réplicas y observa el balanceo de carga.
 
 ---
@@ -105,7 +101,7 @@ Crear un ConfigMap a partir de un archivo y montarlo en un contenedor.
 Usar un volumen local para almacenar datos que sobrevivan a reinicios del pod.
 
 ### Pasos
-1. Crear los recursos necesarios:
+1. Crear los recursos necesarios con el manifiesto `volumenes.yaml`:
    ```bash
    kubectl apply -f volumenes.yaml
    ```
@@ -163,4 +159,11 @@ Definir readiness y liveness probes para un contenedor de Nginx.
 Para eliminar el clúster de kind y todos los recursos creados:
 ```bash
 kind delete cluster --name practicas-k8s
+```
+
+## Pruebas
+
+Para ejecutar las pruebas automatizadas:
+```bash
+pytest
 ```
