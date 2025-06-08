@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: saludo-cron
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: saludo
+              image: busybox
+              command: ["sh", "-c", "date; echo Hola"]
+          restartPolicy: OnFailure
